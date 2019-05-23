@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Nyan Cat Chaser</title>
+    <link href="https://fonts.googleapis.com/css?family=Gugi" rel="stylesheet">
+    <style>
+      body {
+        /* background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); */
+        background-image: url('https://i.imgur.com/HLYE26o.png');
+        font-family: 'Gugi', cursive;
+        overflow: hidden;
+      }
+
+      #nyancat {
+        position: absolute;
+        width: 200px;
+      }
+
+      #doge {
+        position: absolute;
+        height: 200px;
+        bottom: -50px;
+        right: 100px;
+      }
+
+      #details {
+        font-size: 125px;
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+
+      #details p {
+        display: inline;
+        margin: 0;
+      }
+
+      #ghost {
+        width: 100px;
+      }
+
+      .pokemon {
+        position: absolute;
+        width: 50px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <img id='nyancat' src='https://i.gifer.com/17xo.gif' />
+
+    <div id='details'>
+      <p>Score: <span id='score-span'>0</span></p>
+      <p>Time: <span id='time-span'>0</span></p>
+    </div>
+
+    <img src='http://i.imgur.com/g7TUsLv.png' id='doge' />
+  
+    <img src='https://static.giantbomb.com/uploads/scale_small/8/87790/2469743-orange.png' id='ghost' />
+
+    <script src='hittest.js'></script>
+    <script>
+      var body = document.getElementsByTagName('body')[0];
+      var timeSpan = document.getElementById('time-span');
+      var scoreSpan = document.getElementById('score-span');
+      var ghost = document.getElementById('ghost');
+      var nyancat = document.getElementById('nyancat');
+      var TIME = 10;
+      var currentTime;
+      var timerId;
+
+      var nyanHitTest = new HitTest(nyancat);
+      console.log(nyanHitTest);
+
+      var pokemon = [
+        'https://assets.pokemon.com/assets/cms2/img/pokedex/full/129.png',
+        'https://archive-media-0.nyafuu.org/vp/image/1364/27/1364279531753.png',
+        'https://icon2.kisspng.com/20180528/buk/kisspng-pokmon-go-grimer-pokdex-muk-5b0cc3204cef02.8185583715275630403151.jpg',
+        'https://vignette.wikia.nocookie.net/pokemon/images/4/46/019Rattata.png/revision/latest?cb=20140328192134'
+      ]
+
+      window.onload = start();
+
+      function start() {
+        displayNyanCat();
+        displayPokemon();
+        randomizeGhost();
+        startTimer();
+        attachEventListeners();
+      }
+
+      function displayNyanCat() {
+        var x = Math.floor(Math.random() * 100);
+        var y = Math.floor(Math.random() * 100);
+
+        nyancat.style.left = x + "%";
+        nyancat.style.top = y + "%";
+      }
+
+      /*
+      * RANDOM MOUSES
+      */
+
+      function displayPokemon() {
+        for(var i = 0; i < 5; i++) {
+
+          var randomNumber = Math.floor(Math.random() * pokemon.length);
+
+          var mouse = new Image();
+          mouse.src = pokemon[randomNumber];
+          mouse.classList.add('pokemon');
+          
+          var x = Math.floor(Math.random() * 100);
+          var y = Math.floor(Math.random() * 100);
+
+          mouse.style.top = y + "%";
+          mouse.style.left = x + "%";
+
+          body.appendChild(mouse);
+        }
+      }
+
+      function randomizeGhost(){
+        var x = Math.floor(Math.random() * 100);
+        var y = Math.floor(Math.random() * 100);
+
+        ghost.style.position = 'absolute';
+        ghost.style.left = x + "%";
+        ghost.style.top = y + "%";
+      }
+
+      /*
+      * TIMER
+      */
+
+      function startTimer(){
+        currentTime = TIME;
+        timeSpan.innerHTML = TIME;
+
+        timerId = setInterval(function() {
+          // need to end the game
+          if (currentTime <= 0) {
+            console.log("Game over!");
+            clearInterval(timerId);
+            return;
+          }
+      
+          currentTime--;
+          timeSpan.innerHTML = currentTime;
+        }, 1000);
+      }
+
+      /*
+      * ARROW KEY EVENT LISTENERS
+      */ 
+      function attachEventListeners() {
+        document.addEventListener('keydown', function(event) {
+          var code = event.keyCode;
+
+          if(code != 37 && code != 38 && code != 39 && code != 40 ) {
+            // console.log('WRONG KEY PRESSED');
+            return;
+          }
+
+          if(code === 37){
+            nyancat.style.left = (parseInt(nyancat.style.left) - 1) + "%";
+          }else if(code === 38 ){
+            nyancat.style.top = (parseInt(nyancat.style.top) - 1) + "%";
+          }else if(code === 39) {
+            nyancat.style.left = (parseInt(nyancat.style.left) + 1) + "%";
+          } else {
+            nyancat.style.top = (parseInt(nyancat.style.top) + 1) + "%";
+          }
+
+          detectHits();
+
+        });
+      }
+
+      function detectHits() {
+        var pokemon = document.getElementsByClassName('pokemon');
+        for(var i = 0; i < pokemon.length; i++){
+          var poke = pokemon[i];
+          console.log('Checking ', poke);
+
+          console.log(nyanHitTest.toObject(poke));
+
+          if ( nyanHitTest.toObject(poke) ) {
+            console.warn('Nyan hit!');
+          }
+        }
+      }
+
+</script>
+  </body>
+</html>
